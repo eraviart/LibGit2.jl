@@ -2,7 +2,7 @@ using BinDeps
 
 @BinDeps.setup
 
-version = v"0.21.3"
+version = v"0.22.0-rc1"
 libgit2 = library_dependency("libgit2",
     validate = (name, handle) -> begin
         major, minor, patch = Cint[0], Cint[0], Cint[0]

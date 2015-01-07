@@ -10,7 +10,7 @@ Adapted from the Ruby's Rugged libgit bindings
 
 ## Installation / Testing
 LibGit2.jl is tested against the latest release version of
-libgit2 (v0.21.3).  To build libgit2 from source you need CMake.  See the
+libgit2 (v0.22.0).  To build libgit2 from source you need CMake.  See the
 specific build instructions in libgit2's [README](https://github.com/libgit2/libgit2#building-libgit2---using-cmake).
 
 To install and build the package, simply clone the latest master snapshot of the package:
