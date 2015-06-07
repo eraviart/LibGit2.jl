@@ -45,7 +45,18 @@ with_repo_access() do test_repo, path
         @test nada == nothing
     end
 
-    context("test tree iteration") do 
+    context("test get entry by path") do
+        bent = entry_bypath(test_tree, "README")
+        @test Oid(bent) == Oid("1385f264afb75a56a5bec74243be9b367ba4ca08")
+        @test isa(bent, GitTreeEntry{GitBlob})
+    end
+
+    context("test get entry by path returns nothing if not found") do
+        nada = entry_bypath(test_tree, "NADA")
+        @test nada == nothing
+    end
+
+    context("test tree iteration") do
         @test length(collect(test_tree)) == length(test_tree)
         tes = sort(collect(test_tree))
         str = join([name(te) for te in tes], ":")

@@ -62,8 +62,8 @@ end
 
 function entry_bypath(t::GitTree, path::String)
     entry_ptr = Ptr{Void}[0]
-    @check ccall((:git_tree_entry_bypath, libgit2), Cint,
-                  (Ptr{Ptr{Void}}, Ptr{Uint8}), entry_ptr, path)
+    ccall((:git_tree_entry_bypath, libgit2), Cint,
+                  (Ptr{Ptr{Void}}, Ptr{Void}, Ptr{Uint8}), entry_ptr, t.ptr, path)
     return entry_ptr[1] == C_NULL ? nothing :
                                     GitTreeEntry(entry_ptr[1], true)
 end
