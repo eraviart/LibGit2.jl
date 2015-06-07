@@ -168,12 +168,13 @@ type GitTreeBuilder
     end
 end
 
-GitTreeBuilder(r::GitRepo) = begin
-    tbptr = Ptr{Void}[0] 
+GitTreeBuilder(r::GitRepo, source::Union(Nothing, GitTree)=nothing) = begin
+    tbptr = Ptr{Void}[0]
     @check ccall((:git_treebuilder_create, libgit2), Cint,
-                 (Ptr{Ptr{Void}}, Ptr{Void}), tbptr, C_NULL)
+                 (Ptr{Ptr{Void}}, Ptr{Void}), tbptr,
+                 source === nothing ? C_NULL : source.ptr)
     return GitTreeBuilder(tbptr[1], r)
-end 
+end
 
 free!(tb::GitTreeBuilder) = begin
     if tb.ptr != C_NULL
