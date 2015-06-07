@@ -201,6 +201,13 @@ Base.insert!(tb::GitTreeBuilder, filename::String, id::Oid, filemode::Int) = beg
     return tb
 end
 
+# remove an entry from the builder
+Base.delete!(tb::GitTreeBuilder, filename::String) = begin
+    @check ccall((:git_treebuilder_remove, libgit2), Cint,
+                 (Ptr{Void}, Ptr{Uint8}), tb, filename)
+    return tb
+end
+
 # get an entry from the builder from its filename
 Base.getindex(tb::GitTreeBuilder, filename::String) = begin
     entry_ptr = ccall((:git_treebuilder_get, libgit2), Ptr{Void}, 
