@@ -281,7 +281,7 @@ CloneOptionsStruct() = CloneOptionsStruct(one(Cuint),
 type Signature
     name::UTF8String
     email::UTF8String
-    time::Int32
+    time::Int64
     time_offset::Int32
 end
 
