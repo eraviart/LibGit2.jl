@@ -210,9 +210,10 @@ end
 
 # get an entry from the builder from its filename
 Base.getindex(tb::GitTreeBuilder, filename::String) = begin
-    entry_ptr = ccall((:git_treebuilder_get, libgit2), Ptr{Void}, 
+    entry_ptr = ccall((:git_treebuilder_get, libgit2), Ptr{Void},
                       (Ptr{Void}, Ptr{Uint8}), tb, filename)
-    return GitTreeEntry(ptr)
+    return entry_ptr == C_NULL ? nothing :
+                                 GitTreeEntry(entry_ptr)
 end
 
 function cb_tbfilter(te_ptr::Ptr{Void}, payload::Ptr{Void})
