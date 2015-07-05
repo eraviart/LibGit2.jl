@@ -21,7 +21,7 @@ function set_symbolic_target(r::GitReference, target::String;
                              sig::MaybeSignature=nothing,
                              logmsg::MaybeString=nothing)
     ref_ptr = Ptr{Void}[0]
-    @check ccall((:git_reference_set_symbolic_target, libgit2), Cint,
+    @check ccall((:git_reference_symbolic_set_target, libgit2), Cint,
                  (Ptr{Ptr{Void}}, Ptr{Void}, Ptr{Uint8}, Ptr{SignatureStruct}, Ptr{Uint8}),
                  ref_ptr, r, target,
                  sig != nothing ? sig : C_NULL, 
