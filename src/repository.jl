@@ -8,10 +8,11 @@ export isbare, isempty, workdir, path, init_repo, head, exists,
        blob_at, isshallow, hash_data,
        default_signature, repo_discover, isempty, namespace, set_namespace!,
        notes, create_note!, remove_note!, note_default_ref,
-       branch_names, lookup_branch, create_branch, lookup_remote, 
-       remote_names, remote_add!, checkout_tree!, checkout_head!, checkout!, 
-       is_head_detached, GitCredential, CredDefault, CredPlainText, CredSSHKey, 
-       repo_clone, foreach, reset!, currentstate, remove_untracked!, branches
+       branch_names, lookup_branch, create_branch, lookup_remote,
+       remote_names, remote_add!, checkout_tree!, checkout_head!, checkout!,
+       is_head_detached, is_head_unborn, GitCredential, CredDefault,
+       CredPlainText, CredSSHKey, repo_clone, foreach, reset!, currentstate,
+       remove_untracked!, branches
 
 typealias MaybeOid Union(Nothing, Oid)
 typealias MaybeString Union(Nothing, String)
@@ -175,6 +176,10 @@ end
 
 function is_head_detached(r::GitRepo)
     return bool(ccall((:git_repository_head_detached, libgit2), Cint, (Ptr{Void},), r))
+end
+
+function is_head_unborn(r::GitRepo)
+    return bool(ccall((:git_repository_head_unborn, libgit2), Cint, (Ptr{Void},), r))
 end
 
 function init_repo(path::String; bare::Bool=false)
