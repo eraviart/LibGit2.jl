@@ -5,7 +5,7 @@ function message(c::GitCommit, raw::Bool=false)
     local msg_ptr::Ptr{Uint8}
     msg_ptr = raw? ccall((:git_commit_message_raw, libgit2), Ptr{Uint8}, (Ptr{Void},), c) :
                    ccall((:git_commit_message, libgit2), Ptr{Uint8}, (Ptr{Void},), c)
-    if msg_ptr == C_NULL 
+    if msg_ptr == C_NULL
         return nothing
     end
     return utf8(bytestring(msg_ptr))

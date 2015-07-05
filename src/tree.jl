@@ -1,4 +1,4 @@
-export GitTreeEntry, 
+export GitTreeEntry,
        entry_byname, entry_bypath, walk
 
 type GitTreeEntry{T<:GitObject}
@@ -13,12 +13,12 @@ name(te::GitTreeEntry) = te.name
 
 Base.isless(te1::GitTreeEntry, te2::GitTreeEntry) = isless(Oid(te1), Oid(te2))
 
-Base.length(t::GitTree) = 
+Base.length(t::GitTree) =
     int(ccall((:git_tree_entrycount, libgit2), Csize_t, (Ptr{Void},), t))
-                               
+
 Base.filemode(te::GitTreeEntry) = te.filemode
 
-let 
+let
     function tree_entry_name(ptr::Ptr{Void})
         nptr = ccall((:git_tree_entry_name, libgit2), Ptr{Uint8}, (Ptr{Void},), ptr)
         return bytestring(nptr)
@@ -56,7 +56,7 @@ end
 function entry_byname(t::GitTree, filename::String)
     eptr = ccall((:git_tree_entry_byname, libgit2), Ptr{Void},
                  (Ptr{Void}, Ptr{Uint8}), t, filename)
-    return eptr == C_NULL ? nothing : 
+    return eptr == C_NULL ? nothing :
                             GitTreeEntry(eptr, false)
 end
 
@@ -70,7 +70,7 @@ end
 
 function entry_byindex(t::GitTree, idx::Integer)
     entry_ptr = ccall((:git_tree_entry_byindex, libgit2), Ptr{Void},
-                      (Ptr{Void}, Csize_t), t, idx - 1) 
+                      (Ptr{Void}, Csize_t), t, idx - 1)
     return entry_ptr == C_NULL ? nothing :
                                  GitTreeEntry(entry_ptr, false)
 end
@@ -111,7 +111,7 @@ function foreach(::Type{GitTree}, t::GitTree)
 end
 
 function cb_treewalk(root::Ptr{Uint8}, entry::Ptr{Void}, data::Ptr{Void})
-    try 
+    try
         produce(bytestring(root), GitTreeEntry(entry))
         return GitErrorConst.GIT_OK
     catch err
@@ -119,15 +119,15 @@ function cb_treewalk(root::Ptr{Uint8}, entry::Ptr{Void}, data::Ptr{Void})
     end
 end
 
-const c_cb_treewalk = cfunction(cb_treewalk, Cint, 
+const c_cb_treewalk = cfunction(cb_treewalk, Cint,
                                 (Ptr{Uint8}, Ptr{Void}, Ptr{Void}))
- 
+
 function walk(t::GitTree, order=:postorder)
     mode = order == :postorder ? GitConst.TREEWALK_POST :
            order == :preorder  ? GitConst.TREEWALK_PRE  :
            throw(ArgumentError("walk order can be :preorder or :postorder, got :$order"))
     @task ccall((:git_tree_walk, libgit2), Cint,
-                (Ptr{Void}, Cint, Ptr{Void}, Ptr{Void}), 
+                (Ptr{Void}, Cint, Ptr{Void}, Ptr{Void}),
                 t, mode, c_cb_treewalk, C_NULL)
 end
 
@@ -138,7 +138,7 @@ function walk(::Type{GitBlob}, t::GitTree, order::Symbol=:postorder)
 end
 
 function walk(f::Function, ::Type{GitBlob}, t::GitTree, order::Symbol=:postorder)
-    for res in walk(GitBlob, t, order) 
+    for res in walk(GitBlob, t, order)
         f(res)
     end
 end
@@ -159,7 +159,7 @@ end
 type GitTreeBuilder
     ptr::Ptr{Void}
     repo::GitRepo
-    
+
     function GitTreeBuilder(ptr::Ptr{Void}, r::GitRepo)
         @assert ptr != C_NULL
         tb = new(ptr, r)
@@ -188,7 +188,7 @@ Base.convert(::Type{Ptr{Void}}, tb::GitTreeBuilder) = tb.ptr
 # the number of entries in a tree builder
 Base.length(tb::GitTreeBuilder) = begin
     return int(ccall((:git_treebuilder_entrycount, libgit2), Cuint, (Ptr{Void},), tb))
-end 
+end
 
 # add / update an entry to the builder
 Base.insert!(tb::GitTreeBuilder, filename::String, id::Oid, filemode::Int) = begin
@@ -227,19 +227,19 @@ const c_cb_tbfilter = cfunction(cb_tbfilter, Cint, (Ptr{Void}, Ptr{Void}))
 # selectively remote entries in the tree
 Base.filter!(f::Function, tb::GitTreeBuilder) = begin
     f_ptr = pointer_from_objref(f)
-    ccall((:git_treebuilder_filter, libgit2), Void, 
+    ccall((:git_treebuilder_filter, libgit2), Void,
           (Ptr{Void}, Ptr{Void}, Ptr{Void}), tb, c_cb_tbfilter, f_ptr)
     return tb
 end
 
 # clear all entries in the builder
-clear!(tb::GitTreeBuilder) = 
+clear!(tb::GitTreeBuilder) =
     ccall((:git_treebuilder_clear, libgit2), Void, (Ptr{Void},), tb)
 
 # write the contents of the tree builder as a tree object
 function write!(tb::GitTreeBuilder)
     id_ptr = [Oid()]
     @check ccall((:git_treebuilder_write, libgit2), Cint,
-                 (Ptr{Oid}, Ptr{Void}, Ptr{Void}), id_ptr, tb.repo, tb) 
+                 (Ptr{Oid}, Ptr{Void}, Ptr{Void}), id_ptr, tb.repo, tb)
     return id_ptr[1]
 end

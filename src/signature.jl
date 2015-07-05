@@ -15,7 +15,7 @@ end
 Signature(ptr::Ptr{SignatureStruct}) = begin
     sig   = unsafe_load(ptr)::SignatureStruct
     name  = utf8(bytestring(sig.name))
-    email = utf8(bytestring(sig.email)) 
+    email = utf8(bytestring(sig.email))
     time   = sig.when.time
     offset = sig.when.offset
     return Signature(name, email, time, offset)
@@ -26,9 +26,9 @@ Base.show(io::IO, s::Signature) = begin
     print(io, "Signature(\"$(name(s))\",\"$(email(s))\",\"$time_str\")")
 end
 
-Base.(:(==))(sig1::Signature, sig2::Signature) = (sig1.name == sig2.name && 
-                                                  sig1.email == sig2.email && 
-                                                  sig1.time == sig2.time && 
+Base.(:(==))(sig1::Signature, sig2::Signature) = (sig1.name == sig2.name &&
+                                                  sig1.email == sig2.email &&
+                                                  sig1.time == sig2.time &&
                                                   sig1.time_offset == sig2.time_offset)
 
 Base.isequal(sig1::Signature, sig2::Signature) = (sig1 == sig2)
