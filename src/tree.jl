@@ -218,7 +218,7 @@ end
 
 function cb_tbfilter(te_ptr::Ptr{Void}, payload::Ptr{Void})
     te = GitTreeEntry(te_ptr)
-    func = unsafe_pointer_to_objref(payload)::Vector{Any}
+    func = unsafe_pointer_to_objref(payload)::Function
     return bool(func(te)) ? one(Cint) : zero(Cint)
 end
 
