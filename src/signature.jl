@@ -36,7 +36,7 @@ Base.isequal(sig1::Signature, sig2::Signature) = (sig1 == sig2)
 Base.convert(::Type{Ptr{SignatureStruct}}, sig::Signature) = begin
     sig_ptr = Ptr{SignatureStruct}[0]
     @check ccall((:git_signature_new, libgit2), Cint,
-                 (Ptr{Ptr{SignatureStruct}}, Ptr{Uint8}, Ptr{Uint8}, Cint, Cint),
+                 (Ptr{Ptr{SignatureStruct}}, Ptr{Uint8}, Ptr{Uint8}, GitTimeT, Cint),
                  sig_ptr, sig.name, sig.email, sig.time, sig.time_offset)
     return sig_ptr[1]::Ptr{SignatureStruct}
 end
