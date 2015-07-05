@@ -760,8 +760,8 @@ function create_ref(r::GitRepo, refname::String, target::String;
     create_sym_ref(r, refname, target; force=force, sig=sig, logmsg=logmsg)
 end
 
-function create_sym_ref(r::GitRepo, refname::String, target::String; 
-                        force::Bool=false, sig=sig, logmsg=logmsg)
+function create_sym_ref(r::GitRepo, refname::String, target::String;
+                        force::Bool=false, sig=nothing, logmsg=nothing)
     ref_ptr = Ptr{Void}[0]
     @check ccall((:git_reference_symbolic_create, libgit2), Cint,
                  (Ptr{Ptr{Void}}, Ptr{Void}, Ptr{Uint8}, Ptr{Uint8},
